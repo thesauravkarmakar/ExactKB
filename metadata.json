@@ -1,0 +1,5 @@
+{
+  "name": "ExactKB",
+  "description": "A zero-friction image compressor where you set the desired file size and the system intelligently optimizes quality.",
+  "requestFramePermissions": []
+}
