@@ -14,6 +14,36 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload }) => {
   const isCompressing = image.status === 'compressing';
   const isIdle = image.status === 'idle';
 
+  // Helper to format the final size string requested by the user
+  const renderFinalSize = () => {
+    if (!image.result) return '—';
+    
+    const bytes = image.result.finalSize;
+    const mb = bytes / (1024 * 1024);
+    const kb = bytes / 1024;
+    
+    // If it's roughly in the MB range, show ~X.X MB (Actual)
+    if (mb >= 0.9) {
+      return (
+        <div className="flex flex-col md:flex-row md:items-baseline gap-2">
+          <span className="text-4xl font-black text-slate-900 tracking-tight">
+            ~{mb.toFixed(1)} MB
+          </span>
+          <span className="text-lg font-bold text-slate-400 tracking-tight">
+            ({formatBytesUtil(bytes)})
+          </span>
+        </div>
+      );
+    }
+    
+    // Otherwise show exact bytes formatted
+    return (
+      <span className="text-4xl font-black text-slate-900 tracking-tight">
+        {formatBytesUtil(bytes)}
+      </span>
+    );
+  };
+
   return (
     <div className={`bg-white border rounded-[32px] overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 ${isIdle ? 'border-slate-100 opacity-90' : 'border-slate-200'}`}>
       <div className="flex flex-col md:flex-row h-full">
@@ -55,7 +85,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload }) => {
               )}
             </div>
 
-            <div className="mt-8 flex items-center gap-10">
+            <div className="mt-8 flex items-center gap-6 md:gap-10">
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1.5">Initial</span>
                 <span className="text-2xl font-bold text-slate-400">{formatBytesUtil(image.originalSize)}</span>
@@ -76,30 +106,25 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload }) => {
                   ) : isIdle ? (
                     <span className="text-4xl font-black text-slate-200 tracking-tight">Pending</span>
                   ) : (
-                    <span className="text-4xl font-black text-slate-900 tracking-tight">
-                      {image.result ? formatBytesUtil(image.result.finalSize) : '—'}
-                    </span>
+                    renderFinalSize()
                   )}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-end gap-6 border-t border-slate-50 pt-6">
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 border-t border-slate-50 pt-8">
             <button
               onClick={() => onDownload(image)}
               disabled={!isCompleted}
-              className={`w-full sm:w-auto min-w-[240px] flex items-center justify-center gap-5 px-8 py-5 rounded-[22px] font-bold text-[15px] transition-all duration-300 ${
+              className={`w-full sm:w-auto min-w-[200px] flex items-center justify-center gap-3 px-10 py-4 rounded-[20px] font-black text-sm transition-all duration-300 active:scale-95 disabled:opacity-50 tracking-wide ${
                 isCompleted 
-                ? 'bg-[#0f172a] text-white border-2 border-[#93c5fd] shadow-[0_12px_24px_-10px_rgba(15,23,42,0.3)] hover:shadow-[0_0_30px_rgba(147,197,253,0.4)] active:scale-95' 
+                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20' 
                 : 'bg-slate-100 text-slate-300 cursor-not-allowed'
               }`}
             >
-              <Download size={22} className={isCompleted ? "text-[#93c5fd]" : "text-slate-300"} />
-              <div className="flex flex-col items-center leading-[1.2]">
-                 <span className="font-extrabold">Download Compressed</span>
-                 <span className="font-extrabold">Image</span>
-              </div>
+              <Download size={18} />
+              <span>Download</span>
             </button>
           </div>
         </div>

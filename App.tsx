@@ -12,13 +12,6 @@ const App: React.FC = () => {
   const [unit, setUnit] = useState<SizeUnit>('MB');
   const [isProcessingAll, setIsProcessingAll] = useState(false);
 
-  const getRecommendation = () => {
-    if (images.length === 0) return "Ideal for fast web loading";
-    const avgSize = images.reduce((acc, img) => acc + img.originalSize, 0) / images.length;
-    if (avgSize > 2 * 1024 * 1024) return "Downscaling dimensions if necessary";
-    return "Optimizing for exact target";
-  };
-
   const handleFilesSelected = (files: FileList) => {
     const newImages: ImageFile[] = Array.from(files).map((file) => ({
       id: Math.random().toString(36).substr(2, 9),
@@ -126,15 +119,6 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
-                <div className="hidden lg:block h-12 w-px bg-slate-200" />
-                
-                <div className="hidden lg:flex flex-col">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Algorithm</label>
-                  <p className="text-sm font-bold text-slate-600 px-1">
-                    {getRecommendation()}
-                  </p>
-                </div>
               </div>
 
               <div className="flex items-center gap-4 w-full md:w-auto pr-2">
@@ -155,7 +139,7 @@ const App: React.FC = () => {
                   ) : (
                     <Target size={20} />
                   )}
-                  {isProcessingAll ? 'Processing...' : hasUnprocessed ? 'Start Compression' : 'Recalculate'}
+                  {isProcessingAll ? 'Processing...' : hasUnprocessed ? 'Start Compression' : 'Apply new size'}
                 </button>
               </div>
             </div>
