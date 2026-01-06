@@ -1,10 +1,9 @@
-<div align="center">
-  <img src="./banner.png" alt="ExactKB Banner" width="100%" />
-</div>
-
 # ExactKB - Smart Image Compression
 
 ExactKB is a premium, client-side image compression tool designed to give you precise control over your file sizes. Whether you need an image to be exactly 200KB for an upload or compressed to a specific MB limit, ExactKB handles it automatically without compromising more quality than necessary.
+
+<img width="834" height="640" alt="image" src="https://github.com/user-attachments/assets/437e1dda-9c70-4b57-989e-8363fb5d990b" />
+
 
 ## ✨ Key Features
 
@@ -41,7 +40,3 @@ ExactKB is a premium, client-side image compression tool designed to give you pr
 ## 🔒 Privacy First
 
 ExactKB is built with privacy in mind. Unlike other compression tools, we do not upload your images to any server. All processing happens locally in your browser using the Canvas API. No tracking, no storage, no sign-ups.
-
----
-
-Made with ❤️ by [Saurav Karmakar](https://github.com/thesauravkarmakar)
