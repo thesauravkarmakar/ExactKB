@@ -5,6 +5,7 @@ export interface ImageFile {
   originalSize: number;
   originalPreview: string;
   status: 'idle' | 'compressing' | 'completed' | 'error';
+  progress?: number;
   result?: CompressionResult;
 }
 

@@ -19,6 +19,7 @@ const App: React.FC = () => {
       originalSize: file.size,
       originalPreview: URL.createObjectURL(file),
       status: 'idle',
+      progress: 0,
     }));
     setImages((prev) => [...prev, ...newImages]);
   };
@@ -31,10 +32,12 @@ const App: React.FC = () => {
 
     const updatedImages = await Promise.all(
       images.map(async (img) => {
-        setImages(prev => prev.map(p => p.id === img.id ? { ...p, status: 'compressing' as const } : p));
+        setImages(prev => prev.map(p => p.id === img.id ? { ...p, status: 'compressing' as const, progress: 0 } : p));
         try {
-          const result = await compressImage(img.file, targetBytes);
-          return { ...img, status: 'completed' as const, result };
+          const result = await compressImage(img.file, targetBytes, (p) => {
+            setImages(prev => prev.map(item => item.id === img.id ? { ...item, progress: p } : item));
+          });
+          return { ...img, status: 'completed' as const, result, progress: 100 };
         } catch (error) {
           console.error('Compression error:', error);
           return { ...img, status: 'error' as const };

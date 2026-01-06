@@ -2,13 +2,17 @@
 import { CompressionResult } from '../types';
 
 /**
+ * Helper to create an artificial delay for visual feedback.
+ */
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
  * Intelligent compression service that attempts to reach a target size.
- * For lossy formats (JPEG/WebP), it optimizes quality.
- * For lossless formats (PNG) or extreme targets, it optimizes dimensions.
  */
 export async function compressImage(
   file: File,
-  targetSizeInBytes: number
+  targetSizeInBytes: number,
+  onProgress?: (progress: number) => void
 ): Promise<CompressionResult> {
   const originalImg = await loadImage(file);
   const format = file.type;
@@ -18,16 +22,27 @@ export async function compressImage(
   let bestScale = 1.0;
   let bestQuality = 1.0;
   
-  // Strategy: 
-  // 1. If lossy, binary search quality at 100% scale.
-  // 2. If PNG or if lossy quality 0.01 is still too big, binary search scale.
-  
+  const totalSteps = isLossy ? 12 + 10 : 10;
+  let currentStep = 0;
+
+  const updateProgress = () => {
+    currentStep++;
+    if (onProgress) {
+      onProgress(Math.min(95, (currentStep / totalSteps) * 100));
+    }
+  };
+
+  // Step 1: Optimize quality for lossy formats
   if (isLossy) {
     let lowQ = 0.01;
     let highQ = 1.0;
     for (let i = 0; i < 12; i++) {
       const midQ = (lowQ + highQ) / 2;
       const blob = await getResizedBlob(originalImg, format, 1.0, midQ);
+      
+      // Artificial delay to make progress visible
+      await sleep(30);
+
       if (blob.size <= targetSizeInBytes) {
         bestBlob = blob;
         bestQuality = midQ;
@@ -35,18 +50,23 @@ export async function compressImage(
       } else {
         highQ = midQ;
       }
+      updateProgress();
     }
   }
 
-  // If we still don't have a blob under the limit (or it's PNG), we must scale down dimensions
+  // Step 2: Optimize scale if quality adjustment wasn't enough or format is lossless
   if (!bestBlob || bestBlob.size > targetSizeInBytes) {
     let lowS = 0.05;
     let highS = 1.0;
-    const qualityToUse = isLossy ? 0.7 : 1.0; // Use reasonable quality for scaling lossy, 1.0 for PNG
+    const qualityToUse = isLossy ? 0.7 : 1.0;
 
     for (let i = 0; i < 10; i++) {
       const midS = (lowS + highS) / 2;
       const blob = await getResizedBlob(originalImg, format, midS, qualityToUse);
+      
+      // Artificial delay to make progress visible
+      await sleep(30);
+
       if (blob.size <= targetSizeInBytes) {
         bestBlob = blob;
         bestScale = midS;
@@ -54,14 +74,16 @@ export async function compressImage(
       } else {
         highS = midS;
       }
+      updateProgress();
     }
   }
 
-  // Final fallback: use the smallest possible result if target is impossibly low
+  // Fallback if target is extremely small
   if (!bestBlob) {
     bestBlob = await getResizedBlob(originalImg, format, 0.05, 0.01);
   }
 
+  if (onProgress) onProgress(100);
   return createResult(file, bestBlob, bestQuality, bestScale);
 }
 
