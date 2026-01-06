@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Download, CheckCircle2, Loader2, ArrowRight, Sparkles, Clock } from 'lucide-react';
+import { Download, CheckCircle2, Loader2, ArrowRight, Clock } from 'lucide-react';
 import { ImageFile } from '../types';
 import { formatBytes as formatBytesUtil } from '../services/compressionService';
 
@@ -85,25 +85,21 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload }) => {
             </div>
           </div>
 
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-slate-50 pt-6">
-            <div className="flex items-center gap-2.5 text-slate-500">
-              {isCompleted && <Sparkles size={16} className="text-blue-500" />}
-              <p className="text-sm font-semibold italic text-slate-600">
-                {isIdle ? 'Click Recalculate to start compression.' : (image.result?.explanation || 'Processing...')}
-              </p>
-            </div>
-            
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-end gap-6 border-t border-slate-50 pt-6">
             <button
               onClick={() => onDownload(image)}
               disabled={!isCompleted}
-              className={`w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${
+              className={`w-full sm:w-auto min-w-[240px] flex items-center justify-center gap-5 px-8 py-5 rounded-[22px] font-bold text-[15px] transition-all duration-300 ${
                 isCompleted 
-                ? 'bg-slate-900 text-white hover:bg-black shadow-lg shadow-slate-200 active:scale-95' 
+                ? 'bg-[#0f172a] text-white border-2 border-[#93c5fd] shadow-[0_12px_24px_-10px_rgba(15,23,42,0.3)] hover:shadow-[0_0_30px_rgba(147,197,253,0.4)] active:scale-95' 
                 : 'bg-slate-100 text-slate-300 cursor-not-allowed'
               }`}
             >
-              <Download size={18} />
-              Download Compressed Image
+              <Download size={22} className={isCompleted ? "text-[#93c5fd]" : "text-slate-300"} />
+              <div className="flex flex-col items-center leading-[1.2]">
+                 <span className="font-extrabold">Download Compressed</span>
+                 <span className="font-extrabold">Image</span>
+              </div>
             </button>
           </div>
         </div>

@@ -51,7 +51,8 @@ const Dropzone: React.FC<DropzoneProps> = ({ onFilesSelected }) => {
           type="file"
           multiple
           accept="image/*"
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          title=""
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
           onChange={handleFileInput}
         />
         
@@ -59,15 +60,14 @@ const Dropzone: React.FC<DropzoneProps> = ({ onFilesSelected }) => {
           <Upload size={32} />
         </div>
 
-        <h3 className="text-xl font-semibold text-slate-800 mb-2">
+        <h3 className="text-xl font-bold text-slate-900 mb-2 tracking-tight">
           Compress images to an exact size
         </h3>
-        <p className="text-slate-500 mb-6 max-w-sm">
-          Drag and drop your images here or click to browse.
-          No quality loss where it matters.
+        <p className="text-slate-500 mb-6 max-w-sm font-medium">
+          Drag and drop images or click to browse.
         </p>
 
-        <div className="flex items-center gap-6 text-sm text-slate-400">
+        <div className="flex items-center gap-6 text-sm text-slate-400 font-semibold">
           <div className="flex items-center gap-1.5">
             <ImageIcon size={16} />
             <span>PNG, JPG, WebP</span>
@@ -79,8 +79,7 @@ const Dropzone: React.FC<DropzoneProps> = ({ onFilesSelected }) => {
         </div>
       </div>
 
-      <div className="mt-8 text-center text-sm text-slate-400">
-        <p>Images are processed locally and never leave your device.</p>
+      <div className="mt-8 text-center text-sm text-slate-400 font-medium">
         <p>No tracking. No storage. No sign-ups.</p>
       </div>
     </div>

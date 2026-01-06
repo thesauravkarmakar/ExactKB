@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { Target, RotateCcw, Download, Sparkles, ChevronRight, LayoutGrid, PlayCircle } from 'lucide-react';
+import { Target, RotateCcw, Download, Sparkles, ChevronRight, LayoutGrid, Lock } from 'lucide-react';
 import { ImageFile, SizeUnit } from './types';
 import Dropzone from './components/Dropzone';
 import ResultCard from './components/ResultCard';
@@ -78,12 +78,14 @@ const App: React.FC = () => {
   const hasUnprocessed = images.some(img => img.status === 'idle');
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12 md:py-24 animate-in fade-in duration-700">
+    <div className="max-w-5xl mx-auto px-4 py-12 md:py-24 animate-in fade-in duration-700 min-h-screen flex flex-col">
       <header className="text-center mb-16">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest mb-6">
-          <Sparkles size={14} />
-          <span>EXACT SIZE COMPRESSION</span>
+        {/* Privacy Badge at the Top */}
+        <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-emerald-50/80 border border-emerald-100 rounded-full text-emerald-700 font-medium text-sm shadow-sm mb-10">
+          <Lock size={16} />
+          <span>Your files never leave your browser</span>
         </div>
+
         <h1 className="text-6xl md:text-7xl font-black text-slate-900 tracking-tight mb-6">
           Exact<span className="text-blue-600">KB</span>
         </h1>
@@ -92,7 +94,7 @@ const App: React.FC = () => {
         </p>
       </header>
 
-      <main className="space-y-12">
+      <main className="space-y-12 flex-grow">
         {images.length === 0 ? (
           <Dropzone onFilesSelected={handleFilesSelected} />
         ) : (
@@ -200,12 +202,18 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <footer className="mt-32 pb-16 text-center text-slate-400 text-sm font-medium">
-        <p>© {new Date().getFullYear()} ExactKB. Your images never leave your browser.</p>
-        <div className="mt-6 flex justify-center gap-8">
-          <a href="#" className="hover:text-slate-900 transition-colors uppercase tracking-widest text-[10px] font-black">Privacy</a>
-          <a href="#" className="hover:text-slate-900 transition-colors uppercase tracking-widest text-[10px] font-black">Methodology</a>
-          <a href="#" className="hover:text-slate-900 transition-colors uppercase tracking-widest text-[10px] font-black">Docs</a>
+      <footer className="mt-20 pb-12 pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6 px-4">
+        <div className="flex items-center">
+          <p className="text-slate-400 text-sm">
+            Made by <a href="https://github.com/thesauravkarmakar" target="_blank" rel="noopener noreferrer" className="font-bold text-slate-600 hover:text-blue-600 transition-colors">Saurav Karmakar</a>
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-8">
+          <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Blog</a>
+          <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Help</a>
+          <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Compliance</a>
+          <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Terms</a>
         </div>
       </footer>
     </div>
