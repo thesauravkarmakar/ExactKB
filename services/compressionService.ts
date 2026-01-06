@@ -47,7 +47,7 @@ export async function compressImage(
       const midQ = (lowQ + highQ) / 2;
       const blob = await getResizedBlob(originalImg, format, 1.0, midQ);
       
-      // Artificial delay to make progress visible (reduced slightly per step since we have more steps)
+      // Artificial delay to make progress visible
       await sleep(20);
 
       if (blob.size <= targetSizeInBytes) {
@@ -94,7 +94,6 @@ export async function compressImage(
   }
 
   // Absolute fallback: if even 1% scale is too big, just use the last thing we got
-  // or a tiny low-quality thumbnail.
   if (!bestBlob) {
     bestBlob = await getResizedBlob(originalImg, format, 0.05, 0.1);
   }
@@ -130,21 +129,13 @@ function createResult(originalFile: File, resultBlob: Blob, quality: number, sca
   const reduction = ((originalFile.size - finalSize) / originalFile.size) * 100;
   const extension = originalFile.name.split('.').pop()?.toUpperCase() || 'IMG';
   
-  let explanation = '';
-  if (scale < 0.99) {
-    explanation = `Dimensions scaled to ${Math.round(scale * 100)}% at ${Math.round(quality * 100)}% quality.`;
-  } else {
-    explanation = `Optimized to ${Math.round(quality * 100)}% quality at original resolution.`;
-  }
-
   return {
     blob: resultBlob,
     previewUrl: URL.createObjectURL(resultBlob),
     finalSize: finalSize,
     reductionPercentage: Math.max(0, reduction),
     format: extension,
-    quality: Math.round(quality * 100),
-    explanation: explanation
+    quality: Math.round(quality * 100)
   };
 }
 

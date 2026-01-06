@@ -1,21 +1,24 @@
 
 import React from 'react';
-import { Download, CheckCircle2, Loader2, ArrowRight, Clock } from 'lucide-react';
-import { ImageFile } from '../types';
+import { Download, CheckCircle2, Loader2, ArrowRight, Clock, Target, Sparkles } from 'lucide-react';
+import { ImageFile, SizeUnit } from '../types';
 import { formatBytes as formatBytesUtil } from '../services/compressionService';
 
 interface ResultCardProps {
   image: ImageFile;
   onDownload: (image: ImageFile) => void;
+  onUpdateTarget: (size: number, unit: SizeUnit) => void;
+  onRecompress: () => void;
 }
 
-const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload }) => {
+const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarget, onRecompress }) => {
   const isCompleted = image.status === 'completed' && image.result;
   const isCompressing = image.status === 'compressing';
   const isIdle = image.status === 'idle';
+  const hasPreviousResult = !!image.result;
 
   const renderFinalSize = () => {
-    if (!image.result) return '—';
+    if (!image.result || isIdle) return '—';
     
     const bytes = image.result.finalSize;
     const mb = bytes / (1024 * 1024);
@@ -93,33 +96,57 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload }) => {
               {isIdle && (
                 <div className="flex items-center gap-1.5 text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full text-xs font-bold border border-slate-100">
                   <Clock size={14} />
-                  <span>Ready</span>
+                  <span>{hasPreviousResult ? 'Changes Pending' : 'Waiting for action'}</span>
                 </div>
               )}
             </div>
 
-            <div className="mt-8 flex items-center gap-6 md:gap-10">
+            <div className="mt-8 flex flex-wrap items-center gap-6 md:gap-10">
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1.5">Initial</span>
                 <span className="text-2xl font-bold text-slate-400">{formatBytesUtil(image.originalSize)}</span>
               </div>
               
-              <div className={`text-slate-200 mt-4 transition-transform duration-500 ${isCompressing ? 'scale-110 rotate-12' : ''}`}>
+              <div className={`hidden md:block text-slate-200 mt-4 transition-transform duration-500 ${isCompressing ? 'scale-110 rotate-12' : ''}`}>
                 <ArrowRight size={24} strokeWidth={2.5} />
               </div>
 
               <div className="flex flex-col">
-                <span className={`text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5 ${isIdle ? 'text-slate-300' : 'text-blue-600'}`}>Compressed</span>
+                <span className={`text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5 ${isIdle ? 'text-blue-500 font-black' : 'text-slate-400'}`}>Target Size</span>
+                <div className="flex items-center bg-slate-50 rounded-xl p-1 gap-1 border border-slate-100 transition-colors focus-within:border-blue-300">
+                  <input
+                    type="number"
+                    disabled={isCompressing}
+                    value={image.targetSize}
+                    onChange={(e) => onUpdateTarget(Number(e.target.value), image.unit)}
+                    className="w-16 bg-transparent border-none focus:outline-none text-center font-bold text-slate-900 py-1"
+                  />
+                  <div className="flex gap-1">
+                    {(['KB', 'MB'] as SizeUnit[]).map((u) => (
+                      <button
+                        key={u}
+                        disabled={isCompressing}
+                        onClick={() => onUpdateTarget(image.targetSize, u)}
+                        className={`px-2 py-0.5 text-[10px] font-black rounded-md transition-all ${image.unit === u ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-200/50'}`}
+                      >
+                        {u}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col">
+                <span className={`text-[11px] font-bold uppercase tracking-[0.2em] mb-1.5 ${isIdle ? 'text-slate-300' : 'text-emerald-600'}`}>Output</span>
                 <div className="flex items-center gap-2">
                   {isCompressing ? (
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-3 text-blue-600">
                         <span className="text-2xl font-black animate-pulse">OPTIMIZING</span>
                       </div>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{Math.round(image.progress || 0)}% Complete</span>
                     </div>
                   ) : isIdle ? (
-                    <span className="text-4xl font-black text-slate-200 tracking-tight">Pending</span>
+                    <span className="text-4xl font-black text-slate-200 tracking-tight italic">Waiting...</span>
                   ) : (
                     renderFinalSize()
                   )}
@@ -128,19 +155,35 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload }) => {
             </div>
           </div>
 
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 border-t border-slate-50 pt-8">
-            <button
-              onClick={() => onDownload(image)}
-              disabled={!isCompleted}
-              className={`w-full sm:w-auto min-w-[200px] flex items-center justify-center gap-3 px-10 py-4 rounded-[20px] font-black text-sm transition-all duration-300 active:scale-95 disabled:opacity-50 tracking-wide ${
-                isCompleted 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 translate-y-0' 
-                : 'bg-slate-100 text-slate-300 cursor-not-allowed translate-y-1'
-              }`}
-            >
-              <Download size={18} />
-              <span>Download</span>
-            </button>
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-slate-50 pt-8">
+            <div className="text-sm text-slate-400 font-medium italic">
+              {isCompressing ? `Processing iteration ${Math.floor((image.progress || 0) / 10)}...` : isCompleted && !isIdle ? 'Optimization complete.' : hasPreviousResult ? 'Apply changes to re-compress.' : 'Set target size to begin.'}
+            </div>
+            
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              {isIdle && hasPreviousResult && (
+                <button
+                  onClick={onRecompress}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-4 bg-blue-50 text-blue-600 rounded-[20px] font-black text-sm hover:bg-blue-100 transition-all active:scale-95 border border-blue-200 shadow-sm"
+                >
+                  <Sparkles size={18} />
+                  <span>Apply Change</span>
+                </button>
+              )}
+              
+              <button
+                onClick={() => onDownload(image)}
+                disabled={!isCompleted || isIdle}
+                className={`flex-1 sm:flex-none min-w-[180px] flex items-center justify-center gap-3 px-10 py-4 rounded-[20px] font-black text-sm transition-all duration-300 active:scale-95 disabled:opacity-50 tracking-wide ${
+                  isCompleted && !isIdle
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 translate-y-0' 
+                  : 'bg-slate-100 text-slate-300 cursor-not-allowed translate-y-1'
+                }`}
+              >
+                <Download size={18} />
+                <span>Download</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

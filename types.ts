@@ -7,6 +7,8 @@ export interface ImageFile {
   status: 'idle' | 'compressing' | 'completed' | 'error';
   progress?: number;
   result?: CompressionResult;
+  targetSize: number;
+  unit: SizeUnit;
 }
 
 export interface CompressionResult {
@@ -16,7 +18,6 @@ export interface CompressionResult {
   reductionPercentage: number;
   format: string;
   quality: number;
-  explanation: string;
 }
 
 export type SizeUnit = 'KB' | 'MB';
