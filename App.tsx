@@ -2,6 +2,8 @@
 import React from 'react';
 import { Target, RotateCcw, Download, ChevronRight, LayoutGrid } from 'lucide-react';
 import { Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Dropzone from './components/Dropzone';
 import ResultCard from './components/ResultCard';
 import Layout from './components/Layout';
@@ -140,6 +142,8 @@ const App: React.FC = () => {
         <Route path="/compliance" element={<Compliance />} />
         <Route path="/terms" element={<Terms />} />
       </Routes>
+      <Analytics />
+      <SpeedInsights />
     </Layout>
   );
 };
