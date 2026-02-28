@@ -7,6 +7,7 @@ import Dropzone from './components/Dropzone';
 import ResultCard from './components/ResultCard';
 import Layout from './components/Layout';
 import Compliance from './components/Compliance';
+import Terms from './components/Terms';
 import { compressImage } from './services/compressionService';
 
 const Home: React.FC = () => {
@@ -237,6 +238,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/compliance" element={<Compliance />} />
+        <Route path="/terms" element={<Terms />} />
       </Routes>
     </Layout>
   );

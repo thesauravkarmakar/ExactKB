@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                 <div className="flex items-center gap-8">
                     <Link to="/compliance" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Compliance</Link>
-                    <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Terms</a>
+                    <Link to="/terms" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Terms</Link>
                 </div>
             </footer>
         </div>
