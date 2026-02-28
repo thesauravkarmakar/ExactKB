@@ -29,20 +29,20 @@ const App: React.FC = () => {
 
   const updateGlobalTarget = (value: number) => {
     setGlobalTargetSize(value);
-    setImages(prev => prev.map(img => 
+    setImages(prev => prev.map(img =>
       ({ ...img, targetSize: value, status: 'idle' as const })
     ));
   };
 
   const updateGlobalUnit = (u: SizeUnit) => {
     setGlobalUnit(u);
-    setImages(prev => prev.map(img => 
+    setImages(prev => prev.map(img =>
       ({ ...img, unit: u, status: 'idle' as const })
     ));
   };
 
   const updateImageTarget = (id: string, size: number, unit?: SizeUnit) => {
-    setImages(prev => prev.map(img => 
+    setImages(prev => prev.map(img =>
       img.id === id ? { ...img, targetSize: size, status: 'idle' as const, ...(unit ? { unit } : {}) } : img
     ));
   };
@@ -52,7 +52,7 @@ const App: React.FC = () => {
     if (!img) return;
 
     setImages(prev => prev.map(p => p.id === id ? { ...p, status: 'compressing' as const, progress: 0 } : p));
-    
+
     const multiplier = img.unit === 'MB' ? 1024 * 1024 : 1024;
     const targetBytes = img.targetSize * multiplier;
 
@@ -80,7 +80,7 @@ const App: React.FC = () => {
         if (img.status !== 'idle') return img;
 
         setImages(prev => prev.map(p => p.id === img.id ? { ...p, status: 'compressing' as const, progress: 0 } : p));
-        
+
         const multiplier = img.unit === 'MB' ? 1024 * 1024 : 1024;
         const targetBytes = img.targetSize * multiplier;
 
@@ -152,13 +152,13 @@ const App: React.FC = () => {
                       className="w-20 bg-transparent border-none focus:outline-none text-center font-bold text-slate-900 text-xl py-1"
                     />
                     <div className="flex bg-white rounded-xl p-1 shadow-sm border border-slate-200/50">
-                      <button 
+                      <button
                         onClick={() => updateGlobalUnit('KB')}
                         className={`px-4 py-1 text-xs font-black rounded-lg transition-all ${globalUnit === 'KB' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}
                       >
                         KB
                       </button>
-                      <button 
+                      <button
                         onClick={() => updateGlobalUnit('MB')}
                         className={`px-4 py-1 text-xs font-black rounded-lg transition-all ${globalUnit === 'MB' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}
                       >
@@ -199,7 +199,7 @@ const App: React.FC = () => {
                   Your Gallery
                 </h2>
                 {images.length > 1 && !hasUnprocessed && (
-                  <button 
+                  <button
                     onClick={handleDownloadAll}
                     className="text-sm font-black text-blue-600 hover:text-blue-700 flex items-center gap-2 group tracking-wide"
                   >
@@ -210,9 +210,9 @@ const App: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 gap-8">
                 {images.map((img) => (
-                  <ResultCard 
-                    key={img.id} 
-                    image={img} 
+                  <ResultCard
+                    key={img.id}
+                    image={img}
                     onDownload={handleDownload}
                     onUpdateTarget={(size, unit) => updateImageTarget(img.id, size, unit)}
                     onRecompress={() => recompressImageById(img.id)}
@@ -222,15 +222,15 @@ const App: React.FC = () => {
             </div>
 
             {images.length > 1 && !hasUnprocessed && (
-               <div className="mt-20 flex justify-center pb-20">
-                  <button
-                    onClick={handleDownloadAll}
-                    className="flex items-center gap-4 px-14 py-6 bg-slate-900 text-white rounded-[24px] font-black text-xl shadow-2xl hover:bg-black transition-all active:scale-[0.98] tracking-tight"
-                  >
-                    <Download size={28} />
-                    Download All Optimized Images
-                  </button>
-               </div>
+              <div className="mt-20 flex justify-center pb-20">
+                <button
+                  onClick={handleDownloadAll}
+                  className="flex items-center gap-4 px-14 py-6 bg-slate-900 text-white rounded-[24px] font-black text-xl shadow-2xl hover:bg-black transition-all active:scale-[0.98] tracking-tight"
+                >
+                  <Download size={28} />
+                  Download All Optimized Images
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -242,10 +242,8 @@ const App: React.FC = () => {
             Made by <a href="https://github.com/thesauravkarmakar" target="_blank" rel="noopener noreferrer" className="font-bold text-slate-600 hover:text-blue-600 transition-colors">Saurav Karmakar</a>
           </p>
         </div>
-        
+
         <div className="flex items-center gap-8">
-          <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Blog</a>
-          <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Help</a>
           <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Compliance</a>
           <a href="#" className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-medium">Terms</a>
         </div>
