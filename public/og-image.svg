@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="70%" fx="50%" fy="0%">
+      <stop offset="0%" stop-color="#f0f7ff"/>
+      <stop offset="100%" stop-color="#fafafa"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Card -->
+  <rect x="80" y="80" width="1040" height="470" rx="32" fill="white" opacity="0.85"/>
+  <rect x="80" y="80" width="1040" height="470" rx="32" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Blue accent bar -->
+  <rect x="80" y="80" width="1040" height="6" rx="3" fill="#2563eb"/>
+
+  <!-- Logo mark -->
+  <circle cx="192" cy="230" r="36" fill="#eff6ff"/>
+  <text x="192" y="243" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="900" text-anchor="middle" fill="#2563eb">KB</text>
+
+  <!-- ExactKB wordmark -->
+  <text x="252" y="253" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="900" fill="#0f172a" letter-spacing="-2">ExactKB</text>
+
+  <!-- Divider line -->
+  <line x1="120" y1="295" x2="1080" y2="295" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Tagline -->
+  <text x="600" y="378" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="700" fill="#334155" text-anchor="middle">Set the size you want.</text>
+  <text x="600" y="432" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="400" fill="#64748b" text-anchor="middle">We handle the rest automatically.</text>
+
+  <!-- Feature pills -->
+  <rect x="175" y="468" width="168" height="44" rx="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="259" y="496" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#2563eb" text-anchor="middle">±2 KB Precision</text>
+
+  <rect x="363" y="468" width="178" height="44" rx="22" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+  <text x="452" y="496" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#16a34a" text-anchor="middle">100% Browser</text>
+
+  <rect x="561" y="468" width="178" height="44" rx="22" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.5"/>
+  <text x="650" y="496" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#7c3aed" text-anchor="middle">JPEG · PNG · WebP</text>
+
+  <rect x="759" y="468" width="168" height="44" rx="22" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+  <text x="843" y="496" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#ea580c" text-anchor="middle">Bulk Compress</text>
+</svg>
