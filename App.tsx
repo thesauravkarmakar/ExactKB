@@ -43,6 +43,7 @@ const Home: React.FC = () => {
                     type="number"
                     value={globalTargetSize}
                     onChange={(e) => updateGlobalTarget(Number(e.target.value))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && !isProcessingAll && hasUnprocessed) startCompression(); }}
                     className="w-20 bg-transparent border-none focus:outline-none text-center font-bold text-slate-900 text-xl py-1"
                   />
                   <div className="flex bg-white rounded-xl p-1 shadow-sm border border-slate-200/50">

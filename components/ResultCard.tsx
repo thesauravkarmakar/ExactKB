@@ -127,6 +127,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
                     disabled={isCompressing}
                     value={image.targetSize}
                     onChange={(e) => onUpdateTarget(Number(e.target.value), image.unit)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && isIdle && hasPreviousResult) onRecompress(); }}
                     className="w-16 bg-transparent border-none focus:outline-none text-center font-bold text-slate-900 py-1"
                   />
                   <div className="flex gap-1">
