@@ -18,6 +18,7 @@ export interface CompressionResult {
   reductionPercentage: number;
   format: string;
   quality: number;
+  isImpossible: boolean;
 }
 
 export type SizeUnit = 'KB' | 'MB';
