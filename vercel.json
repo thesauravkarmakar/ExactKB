@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/_va/script.js",
+      "destination": "https://va.vercel-scripts.com/v1/script.js"
+    },
+    {
+      "source": "/_va/event",
+      "destination": "https://va.vercel-scripts.com/v1/event"
+    }
+  ]
+}

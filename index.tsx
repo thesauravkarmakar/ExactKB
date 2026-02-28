@@ -15,7 +15,9 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <App />
-      {import.meta.env.PROD && <Analytics />}
+      {import.meta.env.PROD && (
+        <Analytics scriptSrc="/_va/script.js" endpoint="/_va/event" />
+      )}
     </BrowserRouter>
   </React.StrictMode>
 );
