@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Download, CheckCircle2, Loader2, ArrowRight, Clock, Target, Sparkles } from 'lucide-react';
+import { Download, CheckCircle2, Loader2, ArrowRight, Clock, Target, Sparkles, AlertCircle } from 'lucide-react';
 import { ImageFile, SizeUnit } from '../types';
 import { formatBytes as formatBytesUtil } from '../utils/formatUtils';
 
@@ -87,18 +87,26 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
                   {image.file.type.split('/')[1].toUpperCase()} File
                 </p>
               </div>
-              {isCompleted && image.result && image.result.reductionPercentage > 0 && (
-                <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-100 animate-in zoom-in duration-300">
-                  <CheckCircle2 size={14} />
-                  <span>Reduced by {image.result.reductionPercentage.toFixed(0)}%</span>
-                </div>
-              )}
-              {isIdle && (
-                <div className="flex items-center gap-1.5 text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full text-xs font-bold border border-slate-100">
-                  <Clock size={14} />
-                  <span>{hasPreviousResult ? 'Changes Pending' : 'Waiting for action'}</span>
-                </div>
-              )}
+              <div className="flex flex-col items-end gap-1.5">
+                {isCompleted && image.result && image.result.reductionPercentage > 0 && (
+                  <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-100 animate-in zoom-in duration-300">
+                    <CheckCircle2 size={14} />
+                    <span>Reduced by {image.result.reductionPercentage.toFixed(0)}%</span>
+                  </div>
+                )}
+                {isCompleted && image.result?.isImpossible && (
+                  <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full text-xs font-bold border border-amber-100 animate-in zoom-in duration-300">
+                    <AlertCircle size={14} />
+                    <span>Closest achievable</span>
+                  </div>
+                )}
+                {isIdle && (
+                  <div className="flex items-center gap-1.5 text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full text-xs font-bold border border-slate-100">
+                    <Clock size={14} />
+                    <span>{hasPreviousResult ? 'Changes Pending' : 'Waiting for action'}</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-6 md:gap-10">
@@ -157,7 +165,15 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-slate-50 pt-8">
             <div className="text-sm text-slate-400 font-medium italic">
-              {isCompressing ? `Processing iteration ${Math.floor((image.progress || 0) / 10)}...` : isCompleted && !isIdle ? 'Optimization complete.' : hasPreviousResult ? 'Apply changes to re-compress.' : 'Set target size to begin.'}
+              {isCompressing
+                ? `Processing iteration ${Math.floor((image.progress || 0) / 10)}...`
+                : isCompleted && !isIdle
+                  ? image.result?.isImpossible
+                    ? 'Closest achievable — format limits prevent exact targeting.'
+                    : 'Optimization complete.'
+                  : hasPreviousResult
+                    ? 'Apply changes to re-compress.'
+                    : 'Set target size to begin.'}
             </div>
 
             <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -175,8 +191,8 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
                 onClick={() => onDownload(image)}
                 disabled={!isCompleted || isIdle}
                 className={`flex-1 sm:flex-none min-w-[180px] flex items-center justify-center gap-3 px-10 py-4 rounded-[20px] font-black text-sm transition-all duration-300 active:scale-95 disabled:opacity-50 tracking-wide ${isCompleted && !isIdle
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 translate-y-0'
-                    : 'bg-slate-100 text-slate-300 cursor-not-allowed translate-y-1'
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 translate-y-0'
+                  : 'bg-slate-100 text-slate-300 cursor-not-allowed translate-y-1'
                   }`}
               >
                 <Download size={18} />
