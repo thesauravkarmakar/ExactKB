@@ -1,10 +1,7 @@
-
 import { CompressionResult } from '../types';
 
-/**
- * Helper to create an artificial delay for visual feedback.
- */
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+// Shared canvas for memory efficiency
+let sharedCanvas: HTMLCanvasElement | null = null;
 
 /**
  * Intelligent compression service that attempts to reach a target size.
@@ -18,12 +15,11 @@ export async function compressImage(
   const originalImg = await loadImage(file);
   const format = file.type;
   const isLossy = format === 'image/jpeg' || format === 'image/webp';
-  
+
   let bestBlob: Blob | null = null;
   let bestScale = 1.0;
   let bestQuality = 1.0;
-  
-  // Increase iterations for better precision (2^16 = 65,536 steps)
+
   const stepsPerPhase = 16;
   const totalSteps = isLossy ? stepsPerPhase * 2 : stepsPerPhase;
   let currentStep = 0;
@@ -37,27 +33,22 @@ export async function compressImage(
 
   /**
    * STAGE 1: Optimize Quality (Lossy only)
-   * We try to hit the target at 100% scale by varying quality.
    */
   if (isLossy) {
     let lowQ = 0.01;
     let highQ = 1.0;
-    
+
     for (let i = 0; i < stepsPerPhase; i++) {
       const midQ = (lowQ + highQ) / 2;
       const blob = await getResizedBlob(originalImg, format, 1.0, midQ);
-      
-      // Artificial delay to make progress visible
-      await sleep(20);
 
       if (blob.size <= targetSizeInBytes) {
-        // This is a candidate. We want the largest blob <= target.
         bestBlob = blob;
         bestQuality = midQ;
         bestScale = 1.0;
-        lowQ = midQ; // Try higher quality
+        lowQ = midQ;
       } else {
-        highQ = midQ; // Quality too high, file too big
+        highQ = midQ;
       }
       updateProgress();
     }
@@ -65,35 +56,28 @@ export async function compressImage(
 
   /**
    * STAGE 2: Optimize Scale
-   * If Stage 1 didn't find a result (or for lossless), OR if the smallest 
-   * quality at scale 1.0 is still too big, we reduce scale.
    */
   if (!bestBlob || bestBlob.size > targetSizeInBytes) {
-    let lowS = 0.01; // Allow very small thumbnails if necessary
+    let lowS = 0.01;
     let highS = 1.0;
-    
-    // For lossy, we use a slightly lower base quality to give scaling more "room" to work
     const baseQuality = isLossy ? 0.75 : 1.0;
 
     for (let i = 0; i < stepsPerPhase; i++) {
       const midS = (lowS + highS) / 2;
       const blob = await getResizedBlob(originalImg, format, midS, baseQuality);
-      
-      await sleep(20);
 
       if (blob.size <= targetSizeInBytes) {
         bestBlob = blob;
         bestScale = midS;
         bestQuality = baseQuality;
-        lowS = midS; // Try larger scale
+        lowS = midS;
       } else {
-        highS = midS; // Scale too large, file too big
+        highS = midS;
       }
       updateProgress();
     }
   }
 
-  // Absolute fallback: if even 1% scale is too big, just use the last thing we got
   if (!bestBlob) {
     bestBlob = await getResizedBlob(originalImg, format, 0.05, 0.1);
   }
@@ -103,17 +87,20 @@ export async function compressImage(
 }
 
 async function getResizedBlob(img: HTMLImageElement, format: string, scale: number, quality: number): Promise<Blob> {
-  const canvas = document.createElement('canvas');
+  if (!sharedCanvas) {
+    sharedCanvas = document.createElement('canvas');
+  }
+
+  const canvas = sharedCanvas;
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas context failed');
 
-  // Ensure dimensions are at least 1 pixel
   canvas.width = Math.max(1, Math.floor(img.width * scale));
   canvas.height = Math.max(1, Math.floor(img.height * scale));
-  
-  // Using imageSmoothingQuality for better results during downscaling
+
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear old data
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
   return new Promise((resolve, reject) => {
@@ -128,7 +115,7 @@ function createResult(originalFile: File, resultBlob: Blob, quality: number, sca
   const finalSize = resultBlob.size;
   const reduction = ((originalFile.size - finalSize) / originalFile.size) * 100;
   const extension = originalFile.name.split('.').pop()?.toUpperCase() || 'IMG';
-  
+
   return {
     blob: resultBlob,
     previewUrl: URL.createObjectURL(resultBlob),
@@ -141,23 +128,16 @@ function createResult(originalFile: File, resultBlob: Blob, quality: number, sca
 
 function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = e.target?.result as string;
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url); // Clean up memory
+      resolve(img);
     };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Failed to load image'));
+    };
+    img.src = url;
   });
-}
-
-export function formatBytes(bytes: number, decimals = 1) {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }

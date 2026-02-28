@@ -2,7 +2,7 @@
 import React from 'react';
 import { Download, CheckCircle2, Loader2, ArrowRight, Clock, Target, Sparkles } from 'lucide-react';
 import { ImageFile, SizeUnit } from '../types';
-import { formatBytes as formatBytesUtil } from '../services/compressionService';
+import { formatBytes as formatBytesUtil } from '../utils/formatUtils';
 
 interface ResultCardProps {
   image: ImageFile;
@@ -19,10 +19,10 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
 
   const renderFinalSize = () => {
     if (!image.result || isIdle) return '—';
-    
+
     const bytes = image.result.finalSize;
     const mb = bytes / (1024 * 1024);
-    
+
     if (mb >= 0.9) {
       return (
         <div className="flex flex-col md:flex-row md:items-baseline gap-2">
@@ -35,7 +35,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
         </div>
       );
     }
-    
+
     return (
       <span className="text-4xl font-black text-slate-900 tracking-tight">
         {formatBytesUtil(bytes)}
@@ -48,7 +48,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
       {/* Progress Bar Header */}
       {isCompressing && (
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-slate-100 z-20">
-          <div 
+          <div
             className="h-full bg-blue-600 transition-all duration-300 ease-out"
             style={{ width: `${image.progress || 0}%` }}
           />
@@ -58,9 +58,9 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
       <div className="flex flex-col md:flex-row h-full">
         {/* Left: Original Preview */}
         <div className="relative w-full md:w-[320px] bg-slate-100 border-r border-slate-100">
-          <img 
-            src={image.originalPreview} 
-            alt="Original" 
+          <img
+            src={image.originalPreview}
+            alt="Original"
             className={`w-full h-full object-cover min-h-[260px] transition-all duration-500 ${isCompressing ? 'grayscale scale-[1.02] brightness-75' : 'grayscale-0 scale-100'}`}
           />
           <div className="absolute top-4 left-4 px-3 py-1.5 bg-black/60 backdrop-blur-md text-white text-[11px] font-bold rounded-lg uppercase tracking-wider">
@@ -69,7 +69,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
           {isCompressing && (
             <div className="absolute inset-0 flex items-center justify-center bg-blue-600/10 backdrop-blur-[2px]">
               <div className="bg-white/90 p-4 rounded-full shadow-xl">
-                 <Loader2 size={32} className="animate-spin text-blue-600" />
+                <Loader2 size={32} className="animate-spin text-blue-600" />
               </div>
             </div>
           )}
@@ -106,7 +106,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1.5">Initial</span>
                 <span className="text-2xl font-bold text-slate-400">{formatBytesUtil(image.originalSize)}</span>
               </div>
-              
+
               <div className={`hidden md:block text-slate-200 mt-4 transition-transform duration-500 ${isCompressing ? 'scale-110 rotate-12' : ''}`}>
                 <ArrowRight size={24} strokeWidth={2.5} />
               </div>
@@ -159,7 +159,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
             <div className="text-sm text-slate-400 font-medium italic">
               {isCompressing ? `Processing iteration ${Math.floor((image.progress || 0) / 10)}...` : isCompleted && !isIdle ? 'Optimization complete.' : hasPreviousResult ? 'Apply changes to re-compress.' : 'Set target size to begin.'}
             </div>
-            
+
             <div className="flex items-center gap-3 w-full sm:w-auto">
               {isIdle && hasPreviousResult && (
                 <button
@@ -170,15 +170,14 @@ const ResultCard: React.FC<ResultCardProps> = ({ image, onDownload, onUpdateTarg
                   <span>Apply Change</span>
                 </button>
               )}
-              
+
               <button
                 onClick={() => onDownload(image)}
                 disabled={!isCompleted || isIdle}
-                className={`flex-1 sm:flex-none min-w-[180px] flex items-center justify-center gap-3 px-10 py-4 rounded-[20px] font-black text-sm transition-all duration-300 active:scale-95 disabled:opacity-50 tracking-wide ${
-                  isCompleted && !isIdle
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 translate-y-0' 
-                  : 'bg-slate-100 text-slate-300 cursor-not-allowed translate-y-1'
-                }`}
+                className={`flex-1 sm:flex-none min-w-[180px] flex items-center justify-center gap-3 px-10 py-4 rounded-[20px] font-black text-sm transition-all duration-300 active:scale-95 disabled:opacity-50 tracking-wide ${isCompleted && !isIdle
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 translate-y-0'
+                    : 'bg-slate-100 text-slate-300 cursor-not-allowed translate-y-1'
+                  }`}
               >
                 <Download size={18} />
                 <span>Download</span>
