@@ -8,6 +8,13 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
+        proxy: {
+          '/_va': {
+            target: 'https://va.vercel-scripts.com/v1',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/_va/, ''),
+          },
+        },
       },
       plugins: [react()],
       define: {
